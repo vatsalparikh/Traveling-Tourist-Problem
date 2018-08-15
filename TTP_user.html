@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Traveling Tourist Assistant </title>
+    <style>
+        #right-panel {
+            font-family: 'Roboto','sans-serif';
+            line-height: 24px;
+            padding-left: 10px;
+        }
+
+        #right-panel select, #right-panel input {
+            font-size: 11px;
+        }
+
+        #right-panel select {
+            width: 100%;
+        }
+
+        #right-panel i {
+            font-size: 12px;
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            height: 100%;
+            float: left;
+            width: 70%;
+            height: 100%;
+        }
+        #right-panel {
+            margin: 20px;
+            border-width: 2px;
+            width: 20%;
+            height: 400px;
+            float: left;
+            text-align: left;
+            padding-top: 0;
+        }
+        #directions-panel {
+            margin-top: 10px;
+            background-color: #FFEE77;
+            padding: 10px;
+            overflow: scroll;
+            height: 640px;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="right-panel">
+    <div>
+            Please enter your constraints on money and time. In case you have no constraints please leave blank. <br>
+            Money (USD): <input type="text" name="money" id="money"><br>
+            Time (Hours): <input type="text" name="time" id="time"><br> <br>
+            How important are the following factors for your tour? <br>
+            <b>Visiting Popular Attractions</b><br>
+            <input name="audio" type="radio" value="3" id="a1"/> Not Important<br>
+            <input name="audio" type="radio" value="2" id="a2"/> Important<br>
+            <input name="audio" type="radio" value="1" id="a3"/> Very Important<br>
+
+            <b>Total Time Spent in the Tour</b><br>
+            <input name="video" type="radio" value="1" id="b1"/> Not Important<br>
+            <input name="video" type="radio" value="2" id="b2"/> Important<br>
+            <input name="video" type="radio" value="3" id="b3"/> Very Important<br>
+
+            <b>Total Money Spent in the Tour</b><br>
+            <input name="web" type="radio" value="1" id="c1"/> Not Important<br>
+            <input name="web" type="radio" value="2" id="c2"/> Important<br>
+            <input name="web" type="radio" value="3" id="c3"/> Very Important<br>
+            <input type="submit" value="Submit input" id="yes" />
+        <span id="displayNameDisplay"></span>
+        <br>
+        <input type="submit" value="Display path" id="submit">
+    </div>
+    <div id="directions-panel"></div>
+</div>
+<script type="text/javascript">
+    function showValue(newValue)
+    {
+      //  document.getElementById("displayNameDisplay").innerHTML=document.getElementById("range").innerHTML=newValue;
+    }
+</script>
+<script type="text/javascript">
+    document.getElementById('yes').addEventListener('click', function() {
+        var flag1,flag2,flag3,flag4,flag5;
+        errorM=" ";
+        if(parseInt(document.getElementById("money").value)<=0) {
+            flag1=true;
+            errorM=errorM+"money";
+        }
+        if(parseInt(document.getElementById("time").value)<=0) {
+            flag2 = true;
+            if(flag1) {
+                errorM=errorM+" and time";
+            }
+            else{
+                errorM=errorM+"time";
+            }
+        }
+        if(document.getElementById("a1").checked==false && document.getElementById("a2").checked==false && document.getElementById("a3").checked==false) {
+            flag3=true;
+        }
+        if(document.getElementById("b1").checked==false && document.getElementById("b2").checked==false && document.getElementById("b3").checked==false) {
+            flag4=true;
+        }
+        if(document.getElementById("c1").checked==false && document.getElementById("c2").checked==false && document.getElementById("c3").checked==false) {
+            flag5=true;
+        }
+        if(flag1 || flag2 || flag3 ||flag4 ||flag5) {
+            if(flag1 || flag2) {
+                alert("Please enter positive value for"+errorM)
+
+            }
+            if(flag3 || flag4 || flag5) {
+                alert("Please specify the imporance off all the factors")
+            }
+        }
+        else {
+            var sum = 0, a, b, c;
+            if (document.getElementById("a1").checked) {
+                a = document.getElementById("a1").value;
+                a = parseInt(a);
+                sum = sum + parseInt(document.getElementById("a1").value);
+            }
+            if (document.getElementById("a2").checked) {
+                a = document.getElementById("a2").value;
+                a = parseInt(a);
+                sum = sum + parseInt(document.getElementById("a2").value);
+            }
+            if (document.getElementById("a3").checked) {
+                a = document.getElementById("a3").value;
+                a = parseInt(a);
+                sum = sum + parseInt(document.getElementById("a3").value);
+            }
+            if (document.getElementById("b1").checked) {
+                b = document.getElementById("b1").value;
+                b = parseInt(b);
+                sum = sum + parseInt(document.getElementById("b1").value);
+            }
+            if (document.getElementById("b2").checked) {
+                b = document.getElementById("b2").value;
+                b = parseInt(b);
+                sum = sum + parseInt(document.getElementById("b2").value);
+            }
+            if (document.getElementById("b3").checked) {
+                b = document.getElementById("b3").value;
+                b = parseInt(b);
+                sum = sum + parseInt(document.getElementById("b3").value);
+            }
+            if (document.getElementById("c1").checked) {
+                c = document.getElementById("c1").value;
+                c = parseInt(c);
+                sum = sum + parseInt(document.getElementById("c1").value);
+            }
+            if (document.getElementById("c2").checked) {
+                c = document.getElementById("c2").value;
+                c = parseInt(c);
+                sum = sum + parseInt(document.getElementById("c2").value);
+            }
+            if (document.getElementById("c3").checked) {
+                c = document.getElementById("c3").value;
+                c = parseInt(c);
+                sum = sum + parseInt(document.getElementById("c3").value);
+            }
+            var content = (a / sum).toString() + "," + (b / sum).toString() + "," + (c / sum).toString() + "," + document.getElementById("time").value + "," + document.getElementById("money").value;
+            //document.getElementById("displayNameDisplay").innerHTML=content;
+            uriContent = "data:application/octet-stream," + encodeURIComponent(content);
+            //saveAs(uriContent,rex);
+            document.getElementById("displayNameDisplay").innerHTML = "<a href=" + uriContent + " download=\"savedfile.txt\">Here is the download link</a>";
+            //document.getElementById("displayNameDisplay").innerHTML=document.getElementById("money").value;
+        }
+    });
+</script>
+<script type="text/javascript">
+    var read = new XMLHttpRequest();
+    read.open('GET', 'path.txt', false);
+    read.send();
+
+    var displayName = read.responseText
+    var array=displayName.split(",");
+    var mapping=["Hotel Pennsylvania, NY","Statue of Liberty, NY","Times Square, NY","Central Park, NY","Metropolitan Museum of Art, NY", "Empire State Building, NY", "Brooklyn Bridge, NY"];
+    //document.getElementById("displayNameDisplay").innerHTML = mapping[array[1]];
+</script>
+<script>
+    function initMap() {
+        var directionsService = new google.maps.DirectionsService;
+        var directionsDisplay = new google.maps.DirectionsRenderer();
+        var directionsService2 = new google.maps.DirectionsService;
+        var directionsDisplay2 = new google.maps.DirectionsRenderer();
+        directionsDisplay2.setOptions( { suppressMarkers: true } );
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 12,
+            center: {lat: 40.758899, lng: -73.9928131}
+        });
+        directionsDisplay.setMap(map);
+        directionsDisplay2.setMap(map);
+        document.getElementById('submit').addEventListener('click', function() {
+            calculateAndDisplayRoute(directionsService, directionsDisplay);
+        });
+    }
+    function calculateAndDisplayRoute(directionsService, directionsDisplay) {
+        var waypts = [];
+        var checkboxArray = document.getElementById('waypoints');
+        for (var i = 1; i < array.length-1; i++) {
+                waypts.push({
+                    location: mapping[array[i]],
+                    stopover: true
+                });
+        }
+
+        directionsService.route({
+            origin: mapping[array[0]],
+            destination: mapping[array[array.length-1]],
+            waypoints: waypts,
+            optimizeWaypoints: false,
+            travelMode: 'DRIVING'
+        }, function (response, status) {
+            if (status === 'OK') {
+                directionsDisplay.setDirections(response);
+                var route = response.routes[0];
+                var summaryPanel = document.getElementById('directions-panel');
+                summaryPanel.innerHTML = '';
+                // For each route, display summary information.
+                for (var i = 0; i < route.legs.length; i++) {
+                    var routeSegment = i + 1;
+                    summaryPanel.innerHTML += '<b>Route Segment: ' + routeSegment +
+                        '</b><br>';
+                    summaryPanel.innerHTML += route.legs[i].start_address + ' to ';
+                    summaryPanel.innerHTML += route.legs[i].end_address + '<br>';
+                    summaryPanel.innerHTML += route.legs[i].distance.text + '<br><br>';
+                }
+            } else {
+                window.alert('Directions request failed due to ' + status);
+            }
+        });
+    }
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBabPYtAiPlwmTduotjIkUW7LLZxWVLgws&callback=initMap">
+</script>
+</body>
+</html>
